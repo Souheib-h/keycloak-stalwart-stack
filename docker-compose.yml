@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres-iam
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-iam:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak_pass
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HTTP_PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  stalwart:
+    image: stalwartlabs/stalwart:latest
+    container_name: stalwart
+    ports:
+      - "8081:8080"
+      - "25:25"
+      - "143:143"
+      - "587:587"
+    volumes:
+      - stalwart_data:/opt/stalwart
+    restart: unless-stopped
+
+  webmail:
+    image: rootfr/jmap-webmail:latest
+    container_name: webmail
+    ports:
+      - "3001:3000"
+    environment:
+      - JMAP_SERVER_URL=http://stalwart:8080
+      - OAUTH_ENABLED=true
+      - OAUTH_CLIENT_ID=webmail
+      - OAUTH_ISSUER_URL=http://keycloak:8080/realms/mail
+    depends_on:
+      - stalwart
+      - keycloak
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  stalwart_data:
