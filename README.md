@@ -2,46 +2,20 @@
 
 A self-contained identity and mail infrastructure stack combining **Keycloak** (IAM) with **Stalwart Mail Server** and a **JMAP Webmail** client.
 
-The project follows a two-phase approach: local validation on Docker, then bare-metal deployment on Proxmox.
-
 ---
 
 ## Architecture
 ```
-┌─────────────────────────────────────────────────────┐
-│                                                     │
-│   Keycloak (IAM)  ←──OIDC──→  Stalwart (Mail)       │
-│                                    ↑                │
-│                               JMAP Webmail          │
-│                                                     │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│                                              │
+│   Keycloak (IAM) ←──OIDC──→ Stalwart (Mail) │
+│                                   ↑          │
+│                             JMAP Webmail     │
+│                                              │
+└──────────────────────────────────────────────┘
          ↑
          └── Prometheus (monitoring-stack) scrapes Stalwart
 ```
-
----
-
-## Project Structure
-```
-keycloak-stalwart-stack/
-├── Phase-1_Docker/                    # Phase 1 — Docker test environment
-│   ├── img/                           # Screenshots
-│   └── Docker.md                      # Full Docker setup guide
-├── Phase-2_Proxmox/                   # Phase 2 — Bare-metal production
-│   ├── img/                           # Screenshots
-│   └── Proxmox.md                     # Full Proxmox deployment guide
-├── docker-compose.yml                 # Docker stack definition
-└── README.md
-```
-
----
-
-## Project Phases
-
-| Phase | Environment | Doc |
-|-------|-------------|-----|
-| Phase 1 — Testing | Docker (local) | [Docker.md](Phase-1_Docker/Docker.md) |
-| Phase 2 — Production | Bare metal on Proxmox | [Proxmox.md](Phase-2_Proxmox/Proxmox.md) |
 
 ---
 
@@ -56,30 +30,28 @@ keycloak-stalwart-stack/
 
 ---
 
-## Quick Start
-```bash
-git clone git@github.com:Souheib-h/keycloak-stalwart-stack.git
-cd keycloak-stalwart-stack
-docker compose up -d
-```
+## Prerequisites
 
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| Keycloak | `http://localhost:8080` | `admin / admin` |
-| Stalwart | `http://localhost:8081` | Generated on first boot |
-| Webmail | `http://localhost:3001` | — |
+- Docker `>= 29.x` and Docker Compose `>= 5.x`
+- [stalwart-monitoring-stack](https://github.com/Souheib-h/stalwart-monitoring-stack) — Stalwart is part of this stack and is monitored by Prometheus
 
-> Stalwart credentials are printed on first boot:
-> ```bash
-> docker logs stalwart | grep administrator
-> ```
+---
+
+## Project Phases
+
+| Phase | Environment | Doc |
+|-------|-------------|-----|
+| Phase 1 — Testing | Docker (local) | [Docker.md](Phase-1_Docker/Docker.md) |
+| Phase 2 — Production | Bare metal on Proxmox | [Proxmox.md](Phase-2_Proxmox/Proxmox.md) |
 
 ---
 
 ## Related Projects
 
-- [stalwart-monitoring-stack](https://github.com/Souheib-h/stalwart-monitoring-stack) — Prometheus + Grafana monitoring for this stack
-- [Packet-Analysis-Lab](https://github.com/Souheib-h/Packet-Analysis-Lab) — SOC analyst lab
+| Project | Description |
+|---------|-------------|
+| [stalwart-monitoring-stack](https://github.com/Souheib-h/stalwart-monitoring-stack) | Prometheus + Grafana monitoring |
+| [Packet-Analysis-Lab](https://github.com/Souheib-h/Packet-Analysis-Lab) | SOC analyst lab |
 
 ---
 
