@@ -23,7 +23,7 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HTTP_PORT: 8080
     ports:
-      - "8080:8080"
+      - "8082:8080"
     depends_on:
       - postgres
     restart: unless-stopped
@@ -32,27 +32,27 @@ services:
     image: stalwartlabs/stalwart:latest
     container_name: stalwart
     ports:
-      - "8081:8080"
+      - "8080:8080"
       - "25:25"
       - "143:143"
       - "587:587"
     volumes:
       - stalwart_data:/opt/stalwart
     restart: unless-stopped
-
-  webmail:
-    image: rootfr/jmap-webmail:latest
-    container_name: webmail
+  roundcube:
+    image: roundcube/roundcubemail:latest
+    container_name: roundcube
     ports:
-      - "3001:3000"
+      - "3001:80"
     environment:
-      - JMAP_SERVER_URL=http://stalwart:8080
-      - OAUTH_ENABLED=true
-      - OAUTH_CLIENT_ID=webmail
-      - OAUTH_ISSUER_URL=http://keycloak:8080/realms/mail
+      - ROUNDCUBEMAIL_DEFAULT_HOST=stalwart
+      - ROUNDCUBEMAIL_DEFAULT_PORT=143
+      - ROUNDCUBEMAIL_SMTP_SERVER=stalwart
+      - ROUNDCUBEMAIL_SMTP_PORT=587
+      - ROUNDCUBEMAIL_DB_TYPE=sqlite
+      - ROUNDCUBEMAIL_SKIN=elastic
     depends_on:
       - stalwart
-      - keycloak
     restart: unless-stopped
 
 volumes:
